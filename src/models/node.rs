@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Node {
     pub path: PathBuf,
     pub size: u64,
@@ -25,32 +25,67 @@ impl Node {
         else { format!("{} B", size) }
     }
 
-    pub fn print_tree(&self, indent: usize, color: bool) {
+    pub fn print_tree(
+        &self,
+        prefix: &str,
+        is_last: bool,
+        max_depth: usize,
+        level: usize,
+        color: bool,
+    ) {
         let size_str = Self::human_size(self.size);
 
-        let indent_str = " ".repeat(indent * 2);
-        let name = self.path.file_name()
-            .unwrap_or_else(|| self.path.as_os_str())
-            .to_string_lossy();
-
-        if color {
-            println!("{}{}{}{}",
-                indent_str,
-                "\x1b[32m", 
-                name,
-                "\x1b[0m"
-            );
+        if level == 0 {
+            println!("{}  [{}]", self.path.to_string_lossy(), size_str);
         } else {
-            println!("{}{}", indent_str, name);
+            let branch = if is_last { "└── " } else { "├── " };
+            print!("{}", prefix);
+            Self::print_entry(self, branch, color);
         }
 
-        println!("{}  [{}]", indent_str, size_str);
+        if level >= max_depth {
+            return;
+        }
 
         let mut sorted = self.children.clone();
-        sorted.sort_by(|a, b| b.size.cmp(&a.size)); 
+        sorted.sort_by(|a, b| b.size.cmp(&a.size));
 
-        for child in sorted {
-            child.print_tree(indent + 1, color);
+        for (i, child) in sorted.iter().enumerate() {
+            let last = i == sorted.len() - 1;
+
+            let new_prefix = if level == 0 {
+                String::new()
+            } else if is_last {
+                format!("{}    ", prefix)
+            } else {
+                format!("{}│   ", prefix)
+            };
+
+            child.print_tree(&new_prefix, last, max_depth, level + 1, color);
+        }
+    }
+
+    fn print_entry(node: &Node, branch: &str, color: bool) {
+        let name = node
+            .path
+            .file_name()
+            .unwrap_or_else(|| node.path.as_os_str())
+            .to_string_lossy();
+
+        let is_dir = !node.children.is_empty() || node.path.is_dir();
+        let size = Self::human_size(node.size);
+
+        if color {
+            if is_dir {
+                // зелёный + reset
+                println!("{}{}{}{}  [{}]", branch, "\x1b[32m", name, "\x1b[0m", size);
+            } else {
+                // белый + reset
+                println!("{}{}{}{}  [{}]", branch, "\x1b[37m", name, "\x1b[0m", size);
+            }
+        } else {
+            println!("{}{}  [{}]", branch, name, size);
         }
     }
 }
+
