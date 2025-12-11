@@ -10,7 +10,7 @@
 ``` 
 
 
-r#"FSS — File Space Scanner
+#"FSS — File Space Scanner
 
 Usage:
   fss [PATH] [OPTIONS]
