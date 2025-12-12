@@ -50,11 +50,10 @@ Examples:
 #### Debian based distros
 We assume that you have rustup and cargo in your system.
 ```
-git clone github.com/ikelll/fss
-cd fss/
-cargo build
+curl -fsSL https://raw.githubusercontent.com/ikelll/fss/main/install.sh | bash
+
 ```
-After ```cargo build``` move fss binaries to /usr/bin 
+
 
 
 
