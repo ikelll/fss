@@ -47,8 +47,8 @@ Examples:
   fss /var/log -d 
 ```
 ## How to install
-#### Ubuntu20.04+ Debian11+ Fedora33+ RHEL9+ arch-x86_64
-We assume that you have rustup and cargo in your system.
+#### suport system: Ubuntu20.04+ Debian11+ Fedora33+ RHEL9+ arch-x86_64
+
 ```
 curl -fsSL https://raw.githubusercontent.com/ikelll/fss/main/install.sh | bash
 
