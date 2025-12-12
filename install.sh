@@ -3,42 +3,50 @@ set -e
 
 REPO="ikelll/fss"
 BINARY="fss"
-INSTALL_DIR="/usr/local/bin"
+INSTALL_DIR="/usr/bin"
 
 echo "Installing latest release of $BINARY from $REPO..."
 
-command -v curl >/dev/null 2>&1 || {
-  echo "Error: curl is required"
-  exit 1
-}
+for cmd in curl unzip; do
+  if ! command -v "$cmd" >/dev/null 2>&1; then
+    echo "Error: $cmd is required"
+    exit 1
+  fi
+done
 
-command -v tar >/dev/null 2>&1 || {
-  echo "Error: tar is required"
-  exit 1
-}
-
-LATEST_URL=$(
+ASSET_URL=$(
   curl -fsSL "https://api.github.com/repos/$REPO/releases/latest" \
-  | grep browser_download_url \
-  | grep linux \
-  | grep "$BINARY" \
-  | cut -d '"' -f 4 \
-  | head -n 1
+    | grep browser_download_url \
+    | grep linux \
+    | grep glibc \
+    | grep zip \
+    | cut -d '"' -f 4 \
+    | head -n 1
 )
 
-if [ -z "$LATEST_URL" ]; then
-  echo "Error: could not find Linux binary in latest release"
+if [ -z "$ASSET_URL" ]; then
+  echo "Error: could not find Linux ZIP asset in latest release"
   exit 1
 fi
 
 echo "Found release asset:"
-echo "  $LATEST_URL"
+echo "  $ASSET_URL"
 
 TMP_DIR=$(mktemp -d)
 trap 'rm -rf "$TMP_DIR"' EXIT
 
+ZIP_FILE="$TMP_DIR/release.zip"
+
 echo "Downloading..."
-curl -fL "$LATEST_URL" -o "$TMP_DIR/$BINARY"
+curl -fL "$ASSET_URL" -o "$ZIP_FILE"
+
+echo "Extracting..."
+unzip -q "$ZIP_FILE" -d "$TMP_DIR"
+
+if [ ! -f "$TMP_DIR/$BINARY" ]; then
+  echo "Error: binary '$BINARY' not found in archive"
+  exit 1
+fi
 
 chmod +x "$TMP_DIR/$BINARY"
 
@@ -48,4 +56,4 @@ sudo mv "$TMP_DIR/$BINARY" "$INSTALL_DIR/$BINARY"
 echo
 echo "$BINARY installed successfully"
 echo "Run:"
-echo "  $BINARY --help"
+echo "$BINARY --help"
