@@ -46,6 +46,6 @@ jobs:
       - name: Upload release binary
         uses: actions/upload-artifact@v4
         with:
-          name: fss-linux
+          name: fss-linux-glibc 2.31
           path: target/release/fss
 
