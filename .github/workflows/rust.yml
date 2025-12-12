@@ -8,44 +8,53 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
+
+    container:
+      image: ubuntu:20.04
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Install system dependencies
+        run: |
+          apt-get update
+          apt-get install -y \
+            curl \
+            build-essential \
+            ca-certificates \
+            pkg-config
 
       - name: Install Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          override: true
-          profile: minimal
+        run: |
+          curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Cache cargo registry
         uses: actions/cache@v4
         with:
           path: |
-            ~/.cargo/registry
-            ~/.cargo/git
+            /github/home/.cargo/registry
+            /github/home/.cargo/git
             target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          key: ubuntu-20.04-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
-            ${{ runner.os }}-cargo-
+            ubuntu-20.04-cargo-
 
       - name: Build (debug)
         run: cargo build --verbose
 
       - name: Build (release)
         run: cargo build --release
-        
+
       - name: Verify binary
         run: |
           file target/release/fss
           ldd target/release/fss || true
-          
+
       - name: Upload release binary
         uses: actions/upload-artifact@v4
         with:
-          name: fss-linux-glibc 2.31
+          name: fss-linux-glibc-2.31
           path: target/release/fss
-
