@@ -55,7 +55,9 @@ curl -fsSL https://raw.githubusercontent.com/ikelll/fss/main/install.sh | bash
 ```
 
 
-
-
+## How to uninstall
+```
+curl -fsSL https://raw.githubusercontent.com/ikelll/fss/main/uninstall.sh | bash
+```
 
 
