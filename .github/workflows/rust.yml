@@ -26,7 +26,8 @@ jobs:
             build-essential \
             ca-certificates \
             pkg-config \
-            tzdata
+            tzdata \
+            file
 
       - name: Install Rust
         run: |
