@@ -44,5 +44,19 @@ Behavior:
 Examples:
 ```bash
   fss /etc
-  fss /var/log -d 0
+  fss /var/log -d 
 ```
+## How to install
+####Debian based distros
+We assume that you have rustup and cargo in your system.
+```
+git clone github.com/ikelll/fss
+cd fss/
+cargo build
+```
+After ```cargo build``` move fss binaries to /usr/bin 
+
+
+
+
+
