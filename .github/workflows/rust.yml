@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
       - name: Checkout repository
@@ -37,7 +37,12 @@ jobs:
 
       - name: Build (release)
         run: cargo build --release
-
+        
+      - name: Verify binary
+        run: |
+          file target/release/fss
+          ldd target/release/fss || true
+          
       - name: Upload release binary
         uses: actions/upload-artifact@v4
         with:
