@@ -10,7 +10,7 @@
 ``` 
 
 
-r#"FSS — File Space Scanner
+####**"FSS — File Space Scanner**
 
 Usage:
 ```bash
@@ -26,7 +26,7 @@ Behavior:
   - Without -r only one level is shown (even if depth > 1).
 
 Examples:
-"#
+
 ```bash
   fss /etc
   fss /var/log -d 0
